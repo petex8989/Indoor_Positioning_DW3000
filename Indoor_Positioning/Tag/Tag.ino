@@ -9,9 +9,19 @@
 #define APP_NAME "SS TWR AES INIT v1.0"
 
 // Enter WiFi credentials here
-const char *ssid = "WIfI NAMe";
-const char *password = "WIFI PASSWORD";
+const char *ssid = "WiFi NAMe";
+const char *password = "WiFi PASSWORD";
 const char *host = "SERVER HOST ADDRESS"; // Enter IP Address of server, e.g. 192.168.1.32
+
+// MAC Addresses used for ESPNow protocol. Update section to include the MAC Addresses of the devices being used.
+uint8_t tag_mac_addr[] =      { 0xEC, 0x62, 0x60, 0xF1, 0xBF, 0xD8 };
+uint8_t anchor_mac_addr_1[] = { 0x10, 0x97, 0xBD, 0x5C, 0xB8, 0x60 };
+uint8_t anchor_mac_addr_2[] = { 0x10, 0x97, 0xBD, 0x5E, 0x06, 0x20 };
+uint8_t anchor_mac_addr_3[] = { 0x10, 0x97, 0xBD, 0x5D, 0xF9, 0xC4 };
+uint8_t esp_mac_addrs[4][6] = {{ 0xEC, 0x62, 0x60, 0xF1, 0xBF, 0xD8 },
+                               { 0x10, 0x97, 0xBD, 0x5C, 0xB8, 0x60 },
+                               { 0x10, 0x97, 0xBD, 0x5E, 0x06, 0x20 },
+                               { 0x10, 0x97, 0xBD, 0x5D, 0xF9, 0xC4 }};
 
 float anchor_matrix[3][3] = {
   //list of anchor coordinates, relative to chosen origin.
@@ -77,15 +87,6 @@ int data_delivered = -1; // -1 means data has not been delivered yet. 0 means da
 bool anchors_changed = false;
 int communication_mode = 0; // 0 = wifi, 1 = ESP NOW
 bool anchors_set = false;
-
-uint8_t tag_mac_addr[] =      { 0xEC, 0x62, 0x60, 0xF1, 0xBF, 0xD8 };
-uint8_t anchor_mac_addr_1[] = { 0x10, 0x97, 0xBD, 0x5C, 0xB8, 0x60 };
-uint8_t anchor_mac_addr_2[] = { 0x10, 0x97, 0xBD, 0x5E, 0x06, 0x20 };
-uint8_t anchor_mac_addr_3[] = { 0x10, 0x97, 0xBD, 0x5D, 0xF9, 0xC4 };
-uint8_t esp_mac_addrs[4][6] = {{ 0xEC, 0x62, 0x60, 0xF1, 0xBF, 0xD8 },
-                               { 0x10, 0x97, 0xBD, 0x5C, 0xB8, 0x60 },
-                               { 0x10, 0x97, 0xBD, 0x5E, 0x06, 0x20 },
-                               { 0x10, 0x97, 0xBD, 0x5D, 0xF9, 0xC4 }};
 
 typedef struct msg_data {
   int type;        // Instruction (0), Confirmation (1), Data (2)
@@ -171,12 +172,8 @@ public:
     keys_options = t.keys_options;
     aes_job_tx = t.aes_job_tx;
     aes_job_rx = t.aes_job_rx;
-    // rx_buffer = t.rx_buffer;
-    // nonce = t.nonce;
     status = t.status;
     status_reg = t.status_reg;
-    // tx_poll_msg = t.tx_poll_msg;
-    // rx_resp_msg = t.rx_resp_msg;
   }
   uint32_t inc_frame() {
     frame_cnt++;
@@ -273,12 +270,6 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
   else {
     data_delivered = 0;
   }
-  // if (status ==0){
-  //   success = "Delivery Success :)";
-  // }
-  // else{
-  //   success = "Delivery Fail :(";
-  // }
 }
 
 // Callback when data is received
@@ -286,14 +277,6 @@ void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len) {
   // Serial.println("Message Recieved");
   memcpy(&in_message, incomingData, sizeof(in_message));
   msg_parser(in_message);
-  // Serial.println("Value Recieved: " + String(in.value));
-  // out.value = in.value;
-  // esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &out, sizeof(out));
-  // Serial.print("Bytes received: ");
-  // Serial.println(len);
-  // invalue = incomingReadings.temp;
-  // incomingHum = incomingReadings.hum;
-  // incomingPres = incomingReadings.pres;
 }
 
 void connectToWiFi(const char *ssid, const char *pwd) {
@@ -457,7 +440,6 @@ double ranging(Device *dev, int n) {
     } else {
       /* Clear RX error/timeout events in the DW IC status register. */
       dwt_write32bitreg(SYS_STATUS_ID, SYS_STATUS_ALL_RX_TO | SYS_STATUS_ALL_RX_ERR);
-      // Serial.println("failed");
     }
   }
   return avgdist / count;
@@ -480,9 +462,6 @@ int get_position() {
   d[0] = ranging(&anchor1, n);
   d[1] = ranging(&anchor2, n);
   d[2] = ranging(&anchor3, n);
-  // #ifdef timecalc
-  // unsigned long start = micros();
-  // #endif
 
   if (first) {  //intermediate fixed vectors
     first = false;
@@ -535,12 +514,6 @@ int get_position() {
     rmse += dc0 * dc0;
   }
   current_distance_rmse = sqrt(rmse / 3.0);
-  // #ifdef timecalc
-  // unsigned long end = micros();
-  // double duration = end - start;
-  // duration /= 1000000.0;
-  // Serial.println(String("Duration: " + String(duration)));
-  // #endif
   return 1;
 }
 
@@ -591,7 +564,6 @@ double get_anchor_range(int dev1, int dev2, double &range) {
   // Serial.println("Set dev2 to anchor");
   esp_now_send(esp_mac_addrs[dev2], (uint8_t *)&data_out, sizeof(data_out));
   // wait for confirmation
-  // delay(5);
   while((msg_recved == false) && (data_delivered != 0)) {
     delay(1);
   }
@@ -609,7 +581,6 @@ double get_anchor_range(int dev1, int dev2, double &range) {
   // Serial.println("Set dev1 to tag");
   esp_now_send(esp_mac_addrs[dev1], (uint8_t *)&data_out, sizeof(data_out));
   // wait for confirmation
-  // delay(5);
   while((msg_recved == false) && (data_delivered != 0)) {
     delay(1);
   }
@@ -624,9 +595,7 @@ double get_anchor_range(int dev1, int dev2, double &range) {
   // Anchor 1 and Anchor 2 modes set, get range next.
   data_out.data = 2;        // instruction = get range
   data_out.arg1 = 100;      // average out 100 readings
-  // Serial.println("get distance from tag 1 to tag 2");
   esp_now_send(esp_mac_addrs[dev1], (uint8_t *)&data_out, sizeof(data_out));
-  // delay(5);
   while((msg_recved == false) && (data_delivered != 0)) {
     delay(1);
   }
@@ -634,12 +603,10 @@ double get_anchor_range(int dev1, int dev2, double &range) {
   if (instr_success != 1)  {
     Serial.println("get_anchor_range: Anchor " + String(dev1) + " failed to get range from anchor " + String(dev2));
     range = data_recieved;
-    // Serial.println("RANGE: " + String(range));
     ret = false;
   }
   else {
     range = data_recieved;
-    // Serial.println("RANGE: " + String(range));
   }
   clear_msg();  
   delay(delay_1);
@@ -687,7 +654,6 @@ bool init_anchors() {
   data_out.data = 1;        // instruction = change to anchor
   esp_now_send(anchor_mac_addr_1, (uint8_t *)&data_out, sizeof(data_out));
   // wait for confirmation
-  // delay(5);
   while((msg_recved == false) && (data_delivered != 0)) {
     delay(1);
   }
@@ -702,7 +668,6 @@ bool init_anchors() {
   data_out.reciever = 2;  // sent to anchor 2
   esp_now_send(anchor_mac_addr_2, (uint8_t *)&data_out, sizeof(data_out));
   // wait for confirmation
-  // delay(5);
   while((msg_recved == false) && (data_delivered != 0)) {
     delay(1);
   }
@@ -717,7 +682,6 @@ bool init_anchors() {
   data_out.reciever = 3;  // sent to anchor 3
   esp_now_send(anchor_mac_addr_3, (uint8_t *)&data_out, sizeof(data_out));
   // wait for confirmation
-  // delay(5);
   while((msg_recved == false) && (data_delivered != 0)) {
     delay(1);
   }

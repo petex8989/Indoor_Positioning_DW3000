@@ -8,6 +8,12 @@
 #define anchornum 3
 int this_device = anchornum;
 
+// MAC Addresses used for ESPNow protocol. Update section to include the MAC Addresses of the devices being used.
+uint8_t tag_mac_addr[] =      {0xEC, 0x62, 0x60, 0xF1, 0xBF, 0xD8};
+uint8_t anchor_mac_addr_1[] = {0x10, 0x97, 0xBD, 0x5C, 0xB8, 0x60};
+uint8_t anchor_mac_addr_2[] = {0x10, 0x97, 0xBD, 0x5E, 0x06, 0x20};
+uint8_t anchor_mac_addr_3[] = {0x10, 0x97, 0xBD, 0x5D, 0xF9, 0xC4};
+
 // connection pins
 const uint8_t PIN_RST = 27;  // reset pin
 const uint8_t PIN_IRQ = 34;  // irq pin
@@ -118,12 +124,6 @@ bool gotrangeyet = true;
 bool rangegot = false;
 double range_data = -1;
 int num_avg = 0;
-
-
-uint8_t tag_mac_addr[] =      {0xEC, 0x62, 0x60, 0xF1, 0xBF, 0xD8};
-uint8_t anchor_mac_addr_1[] = {0x10, 0x97, 0xBD, 0x5C, 0xB8, 0x60};
-uint8_t anchor_mac_addr_2[] = {0x10, 0x97, 0xBD, 0x5E, 0x06, 0x20};
-uint8_t anchor_mac_addr_3[] = {0x10, 0x97, 0xBD, 0x5D, 0xF9, 0xC4};
 
 typedef struct msg_data {
   int type;         // Instruction (0), Confirmation (1), Data (2)
