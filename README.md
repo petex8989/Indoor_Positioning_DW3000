@@ -6,6 +6,10 @@ This project uses four MakerFabs DW3000 UWB ESP32 modules. Three modules are use
 # User Manual
 In this user manual, we will walk you through how to initialize the system, and then how to operate the system.
 ## Initial System Setup
+### **Prerequisites**
+This project utilizes Makerfabs DW3000 library for the ESP32. You can download it from here: https://github.com/Makerfabs/Makerfabs-ESP32-UWB-DW3000
+  
+Install this library before proceeding with the rest of the instructions.
 ### **Antenna Delay Calibration**
 If you are setting up the system for the first time with new devices, you will need to determine the antenna delays for the following combinations of devices.  
      
