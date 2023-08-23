@@ -7,14 +7,17 @@ This project uses four MakerFabs DW3000 UWB ESP32 modules. Three modules are use
 In this user manual, we will walk you through how to initialize the system, and then how to operate the system.
 ## Initial System Setup
 ### **Antenna Delay Calibration**
-If you are setting up the system for the first time with new devices, you will need to determine the antenna delays for the following combinations of devices.     
+If you are setting up the system for the first time with new devices, you will need to determine the antenna delays for the following combinations of devices.  
+     
 * Tag to Anchor 1  
 * Tag to Anchor 2  
 * Tag to Anchor 3  
 * Anchor 1 to Anchor 2  
 * Anchor 1 to Anchor 3  
 * Anchor 2 to Anchor 3  
+  
 To calculate the antenna delays, you will place your anchor device and your tag at a measured distance. This distance will then be entered into the software global variable defined at the top of the sketch called “this_anchor_target_distance”. Once you have this set up, upload the anchor and tag codes to the respective devices. Open the serial monitor, and you will see the calculated anchor delays for the pair.    
+  
 Once you have determined all of the anchor antenna delays, you will need to enter them into the sketch for the anchors in the indoor positioning file. You will see a section near the top of the file beginning with the #if statement “#if anchornum == 1”. For each statement, that statement will contain the unique data that each anchor will contain. Inside of these statements, you will see several antenna delay definitions. For each pair of TX/RX delays, keep the value the same. The first delay you will see is for the tag. Enter the antenna delays you got between the tags and the anchors for each respective anchor. Next you will see the antenna delays between the anchors. Enter the antenna delays you determined earlier for each anchor. You will also see that for each anchor, the antenna delay for that anchor is also a value, for instance, the definitions for anchor 1 will contain the antenna delays for anchor 1 as well. For these values, the default value of 16384 will already be entered, so you do not need to change these values.    
 ### **Entering MAC Addresses**
 In order for all of the devices to communicate with one another, you will need to find and define all of the devices’ MAC Addresses in both the files for the anchors and the tag. To find each device’s MAC Address, run the get_mac_address file on each device and record each one. Enter these MAC addresses into the anchor (lines 12 to 15) and tag (lines 17 to 24) codes.  
